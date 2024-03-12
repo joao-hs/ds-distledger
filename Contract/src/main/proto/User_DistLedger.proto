@@ -1,0 +1,63 @@
+syntax = "proto3";
+package pt.ulisboa.tecnico.distledger.contract.user;
+
+import "DistLedgerCommonDefinitions.proto";
+
+// User Interface of the DistLedger Service
+
+/*os processos cliente devem imprimir "OK" seguido da mensagem de resposta*/
+
+/*comando 'balance' o método toString() não imprime o saldo caso este seja nulo*/
+
+message BalanceRequest {
+  string userId = 1;
+  VectorClock prev = 2;
+}
+
+message BalanceResponse {
+  int32 value = 1;
+  VectorClock newPrev = 2;
+}
+
+/* Cada utilizador pode criar uma conta, com saldo inicial nulo.
+cada utilizador pode ter, no máximo, uma conta */
+message CreateAccountRequest {
+  string userId = 1;
+  VectorClock prev = 2;
+}
+
+message CreateAccountResponse {
+  VectorClock operationTS = 1;
+}
+
+/*Cada utilizador também pode apagar a sua conta, desde que o saldo da conta seja nulo nesse momento
+a conta do broker existe sempre e o seu saldo inicial é 1000 moedas
+quando o sistema DistLedger se inicia, existe uma única conta, com saldo 1000, cujo dono é o broker.*/
+/* message DeleteAccountRequest {
+  string userId = 1;
+  VectorClock prev = 2;
+} */
+
+/* message DeleteAccountResponse {
+  VectorClock operationTS = 1;
+} */
+
+/*(i) a conta origem precisa existir e ter saldo superior ou igual ao montante a transferir
+  (ii) a conta destino precisa existir; caso contrário, a transferência é cancelada.*/
+message TransferToRequest {
+  string accountFrom = 1;
+  string accountTo = 2;
+  int32 amount = 3;
+  VectorClock prev = 4;
+}
+
+message TransferToResponse {
+  VectorClock operationTS = 1;
+}
+
+service UserService {
+  rpc balance(BalanceRequest) returns (BalanceResponse);
+  rpc createAccount(CreateAccountRequest) returns (CreateAccountResponse);
+  //rpc deleteAccount(DeleteAccountRequest) returns (DeleteAccountResponse);
+  rpc transferTo(TransferToRequest) returns (TransferToResponse);
+}

@@ -1,0 +1,45 @@
+syntax = "proto3";
+package pt.ulisboa.tecnico.distledger.contract.namingserver;
+
+import "DistLedgerCommonDefinitions.proto";
+
+enum ServiceName {
+  DISTLEDGER = 0;
+}
+
+enum ServerQualifier {
+  PRIMARY = 0;
+  SECONDARY = 1;
+  TERTIARY = 2;
+  ALL = 3;
+}
+
+message RegisterRequest {
+  ServiceName serviceName = 1;
+  ServerQualifier serverQualifier = 2;
+  Address address = 3;
+}
+
+message RegisterResponse {}
+
+message LookupRequest {
+  ServiceName serviceName = 1;
+  ServerQualifier serverQualifier = 2; // optional
+}
+
+message LookupResponse {
+  repeated Address address = 1;
+}
+
+message DeleteRequest {
+  ServiceName serviceName = 1;
+  Address address = 2;
+}
+
+message DeleteResponse {}
+
+service NamingServerService {
+  rpc register(RegisterRequest) returns (RegisterResponse);
+  rpc lookup(LookupRequest) returns (LookupResponse);
+  rpc delete(DeleteRequest) returns (DeleteResponse);
+}
